@@ -1,15 +1,23 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
+/**
+ * Props del componente EndGameScreen
+ */
 interface EndGameScreenProps {
-  playerName: string;
-  score: number;
-  totalQuestions: number;
-  hasWon: boolean;
-  onRestartGame: () => void;
-  onGoToStart: () => void;
+  playerName: string; // Nombre del jugador
+  score: number; // Puntuación final
+  totalQuestions: number; // Total de preguntas del juego
+  hasWon: boolean; // Si el jugador ganó
+  onRestartGame: () => void; // Callback para reiniciar con el mismo jugador
+  onGoToStart: () => void; // Callback para volver al inicio
 }
 
+/**
+ * Pantalla final del juego
+ * Muestra los resultados de la partida (victoria o derrota)
+ * y opciones para jugar de nuevo o volver al inicio
+ */
 export const EndGameScreen: React.FC<EndGameScreenProps> = ({
   playerName,
   score,
@@ -18,11 +26,17 @@ export const EndGameScreen: React.FC<EndGameScreenProps> = ({
   onRestartGame,
   onGoToStart,
 }) => {
+  /**
+   * Obtiene el mensaje a mostrar según el resultado
+   */
   const getMessage = () => {
     if (hasWon) return '¡Victoria!';
     return '¡Has perdido!';
   };
 
+  /**
+   * Obtiene el título según el resultado
+   */
   const getTitle = () => {
     if (hasWon) return 'Felicidades';
     return 'Game Over';
@@ -31,12 +45,15 @@ export const EndGameScreen: React.FC<EndGameScreenProps> = ({
   return (
     <View style={styles.container}>
       <View style={styles.content}>
+        {/* Título principal (Felicidades / Game Over) */}
         <Text style={[styles.title, !hasWon && styles.titleLost]}>{getTitle()}</Text>
 
+        {/* Nombre del jugador */}
         <View style={styles.playerContainer}>
           <Text style={styles.playerName}>{playerName}</Text>
         </View>
 
+        {/* Puntuación final */}
         <View style={styles.scoreContainer}>
           <Text style={styles.scoreLabel}>Tu puntuación:</Text>
           <Text style={[styles.scoreValue, !hasWon && styles.scoreLost]}>
@@ -44,10 +61,12 @@ export const EndGameScreen: React.FC<EndGameScreenProps> = ({
           </Text>
         </View>
 
+        {/* Mensaje de victoria/derrota */}
         <Text style={[styles.message, hasWon ? styles.messageWin : styles.messageLost]}>
           {getMessage()}
         </Text>
 
+        {/* Botones de acción */}
         <View style={styles.buttonsContainer}>
           <TouchableOpacity style={styles.primaryButton} onPress={onRestartGame}>
             <Text style={styles.primaryButtonText}>Jugar de nuevo</Text>

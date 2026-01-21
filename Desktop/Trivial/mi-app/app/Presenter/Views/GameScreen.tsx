@@ -9,19 +9,30 @@ import {
 } from 'react-native';
 import { Preguntas } from '../../Domain/Entities/Pregunta';
 
+/**
+ * Props del componente GameScreen
+ */
 interface GameScreenProps {
-  playerName: string;
-  currentQuestion: Preguntas | null;
-  currentQuestionNumber: number;
-  totalQuestions: number;
-  selectedAnswer: number | null;
-  isAnswerRevealed: boolean;
-  isCorrect: boolean | null;
-  onSelectAnswer: (answerIndex: number) => void;
-  onRevealAnswer: () => void;
-  onNextQuestion: () => void;
+  playerName: string; // Nombre del jugador
+  currentQuestion: Preguntas | null; // Pregunta actual
+  currentQuestionNumber: number; // Número de pregunta actual
+  totalQuestions: number; // Total de preguntas para ganar
+  selectedAnswer: number | null; // Índice de la respuesta seleccionada
+  isAnswerRevealed: boolean; // Si se ha revelado la respuesta
+  isCorrect: boolean | null; // Si la respuesta es correcta
+  onSelectAnswer: (answerIndex: number) => void; // Callback al seleccionar respuesta
+  onRevealAnswer: () => void; // Callback al revelar respuesta
+  onNextQuestion: () => void; // Callback para siguiente pregunta
 }
 
+/**
+ * Pantalla principal del juego donde se muestran las preguntas
+ * Muestra:
+ * - Información del jugador y progreso
+ * - Pregunta actual
+ * - Opciones de respuesta
+ * - Feedback visual de respuesta correcta/incorrecta
+ */
 export const GameScreen: React.FC<GameScreenProps> = ({
   playerName,
   currentQuestion,
@@ -34,8 +45,10 @@ export const GameScreen: React.FC<GameScreenProps> = ({
   onRevealAnswer,
   onNextQuestion,
 }) => {
+  // Animación de fade-in para cada nueva pregunta
   const fadeAnim = new Animated.Value(0);
 
+  // Efecto para animar la entrada de cada pregunta
   useEffect(() => {
     Animated.timing(fadeAnim, {
       toValue: 1,
@@ -44,6 +57,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({
     }).start();
   }, [currentQuestion]);
 
+  // Efecto para avanzar automáticamente después de revelar la respuesta
   useEffect(() => {
     if (isAnswerRevealed && isCorrect !== null) {
       const timer = setTimeout(() => {
@@ -54,6 +68,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({
     }
   }, [isAnswerRevealed, isCorrect, onNextQuestion]);
 
+  // Validación de seguridad: si no hay pregunta, muestra error
   if (!currentQuestion) {
     return (
       <View style={styles.container}>
@@ -62,6 +77,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({
     );
   }
 
+  // Obtiene los datos de la pregunta actual
   const respuestas = currentQuestion.getRespuestas();
   const respuestaCorrecta = currentQuestion.getRespuestaCorrecta();
   const preguntasRestantes = totalQuestions - currentQuestionNumber;
@@ -85,8 +101,10 @@ export const GameScreen: React.FC<GameScreenProps> = ({
           <Text style={styles.questionText}>{currentQuestion.getEnunciado()}</Text>
         </View>
 
+        {/* Lista de respuestas posibles */}
         <View style={styles.answersContainer}>
           {respuestas.map((respuesta, index) => {
+            // Determina el estado visual de cada respuesta
             const isSelected = selectedAnswer === index;
             const isCorrectAnswer = isAnswerRevealed && index === respuestaCorrecta;
             const isWrongAnswer = isAnswerRevealed && isSelected && !isCorrectAnswer;
@@ -104,6 +122,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({
                 disabled={isAnswerRevealed}
               >
                 <View style={styles.answerContent}>
+                  {/* Etiqueta de la respuesta (A, B, C, D) */}
                   <Text style={styles.answerLabel}>{String.fromCharCode(65 + index)}</Text>
                   <Text
                     style={[
@@ -114,6 +133,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({
                   >
                     {respuesta}
                   </Text>
+                  {/* Marca de verificación para respuesta correcta */}
                   {isCorrectAnswer && <Text style={styles.checkMark}>✓</Text>}
                 </View>
               </TouchableOpacity>
@@ -121,6 +141,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({
           })}
         </View>
 
+        {/* Botón para confirmar la respuesta seleccionada */}
         {!isAnswerRevealed && (
           <TouchableOpacity
             style={[styles.submitButton, selectedAnswer === null && styles.submitButtonDisabled]}
@@ -131,6 +152,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({
           </TouchableOpacity>
         )}
 
+        {/* Mensaje de feedback (correcto/incorrecto) */}
         {isAnswerRevealed && (
           <View style={styles.resultContainer}>
             <Text style={[styles.resultText, isCorrect ? styles.correctText : styles.wrongText]}>

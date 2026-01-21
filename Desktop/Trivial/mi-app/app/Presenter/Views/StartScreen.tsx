@@ -9,13 +9,26 @@ import {
   Platform,
 } from 'react-native';
 
+/**
+ * Props del componente StartScreen
+ */
 interface StartScreenProps {
-  onStartGame: (playerName: string) => void;
+  onStartGame: (playerName: string) => void; // Callback que se ejecuta al iniciar el juego
 }
 
+/**
+ * Pantalla de inicio del juego
+ * Muestra el título del juego y solicita al usuario que introduzca su nombre
+ * antes de comenzar a jugar
+ */
 export const StartScreen: React.FC<StartScreenProps> = ({ onStartGame }) => {
+  // Estado local para el nombre del jugador
   const [name, setName] = useState('');
 
+  /**
+   * Maneja el inicio del juego
+   * Valida que el nombre no esté vacío antes de iniciar
+   */
   const handleStartGame = () => {
     if (name.trim().length > 0) {
       onStartGame(name.trim());
